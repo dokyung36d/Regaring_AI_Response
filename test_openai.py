@@ -9,7 +9,11 @@ client = OpenAI(
 
 stream = client.chat.completions.create(
     model="gpt-4o-mini",
-    messages=[{"role": "user", "content": "can you tell me about ha-seong kim?"}],
+    messages=[{"role": "user", "content": "Hi my name is dokyung"},
+              {"role": "assistant", "content": "Hi Dokyung! How can I assist you today?"},
+              {"role": "user", "content": "do you remember my name?"},
+              {"role": "assistant", "content": "Hi Dokyung! How can I assist you today?"},
+              {"role": "user", "content": "is there any flight from incheon to istanbul in 2022?"}],
     stream=True,
 )
 for chunk in stream:
