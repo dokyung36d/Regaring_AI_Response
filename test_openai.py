@@ -27,6 +27,4 @@ responese = client.embeddings.create(
   encoding_format="float"
 )
 
-print("hello world")
-
 print(responese.data[0].embedding)

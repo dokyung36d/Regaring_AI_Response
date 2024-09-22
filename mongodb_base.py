@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from key import mongodb_password
 
 def ConnectMongoDB():
-    client = MongoClient("mongodb://localhost:27017");
+    client = MongoClient("mongodb://localhost:27017")
     mydb = client["signup"]
     mycol = mydb["userinfo"]
     return mycol
