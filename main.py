@@ -1,22 +1,14 @@
-import transformers
-import torch
+from generate_random_hobby_and_newspaper_title import generate_hobby_and_newspaper_tile
+from embedding import get_embedding
+from fetch_relevant import fetch_relevant_document
 
-model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+generated_hobby, generated_newspaper_title = generate_hobby_and_newspaper_tile()
 
-pipeline = transformers.pipeline(
-    "text-generation",
-    model=model_id,
-    model_kwargs={"torch_dtype": torch.bfloat16},
-    device_map="auto",
-)
+generated_newspaper_title_embedding = get_embedding(generated_newspaper_title)
 
-messages = [
-    {"role": "system", "content": "You are a programming chatbot who always speaks kindly"},
-    {"role": "user", "content": "What is the python?"},
-]
+retreived_name, retreived_hobby = fetch_relevant_document(generated_newspaper_title_embedding)
 
-outputs = pipeline(
-    messages,
-    max_new_tokens=256,
-)
-print(outputs[0]["generated_text"][-1])
+print(f"generated hobby : {generated_hobby}, generated newspaper title : {generated_newspaper_title}")
+
+print(retreived_name)
+print(retreived_hobby)

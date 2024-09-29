@@ -8,50 +8,99 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client['RAG']
 collection = db['embedding']
 
-# Fetch one document
-document = collection.find_one()
+if __name__ == "__main__":
+    # Fetch one document
+    document = collection.find_one()
+    hobby_embedding = document["hobby_embedding"]
 
-hobby_embedding = document["hobby_embedding"]
-
-pipeline = [
-    {
-        "$addFields": {
-            "dot_product": {
-                "$let": {
-                    "vars": {
-                        "query": hobby_embedding,
-                        "embedding": "$hobby_embedding"
-                    },
-                    "in": {
-                        "$reduce": {
-                            "input": {"$range": [0, {"$size": "$$query"}]},
-                            "initialValue": 0,
-                            "in": {
-                                "$add": [
-                                    "$$value",
-                                    {
-                                        "$multiply": [
-                                            {"$arrayElemAt": ["$$query", "$$this"]},
-                                            {"$arrayElemAt": ["$$embedding", "$$this"]}
-                                        ]
-                                    }
-                                ]
+    pipeline = [
+        {
+            "$addFields": {
+                "dot_product": {
+                    "$let": {
+                        "vars": {
+                            "query": hobby_embedding,
+                            "embedding": "$hobby_embedding"
+                        },
+                        "in": {
+                            "$reduce": {
+                                "input": {"$range": [0, {"$size": "$$query"}]},
+                                "initialValue": 0,
+                                "in": {
+                                    "$add": [
+                                        "$$value",
+                                        {
+                                            "$multiply": [
+                                                {"$arrayElemAt": ["$$query", "$$this"]},
+                                                {"$arrayElemAt": ["$$embedding", "$$this"]}
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    },
-    {"$sort": {"dot_product": -1}},  # Sort by highest similarity
-    {"$limit": 3}  # Limit to top 3
-]
+        },
+        {"$sort": {"dot_product": -1}},  # Sort by highest similarity
+        {"$limit": 3}  # Limit to top 3
+    ]
 
-# Execute the aggregation
-results = list(collection.aggregate(pipeline))
+    # Execute the aggregation
+    results = list(collection.aggregate(pipeline))
 
-print(f"{document['name']}'s hobby : {document['hobby']}")
+    print(f"{document['name']}'s hobby : {document['hobby']}")
 
-# Display the results
-for result in results:
-    print(f"Fetched {result['name']}'s hobby : {result['hobby']}")
+    # Display the results
+    for result in results:
+        print(f"Fetched {result['name']}'s hobby : {result['hobby']}")
+
+def fetch_relevant_document(embedding):
+    pipeline = [
+        {
+            "$addFields": {
+                "dot_product": {
+                    "$let": {
+                        "vars": {
+                            "query": embedding,
+                            "embedding": "$hobby_embedding"
+                        },
+                        "in": {
+                            "$reduce": {
+                                "input": {"$range": [0, {"$size": "$$query"}]},
+                                "initialValue": 0,
+                                "in": {
+                                    "$add": [
+                                        "$$value",
+                                        {
+                                            "$multiply": [
+                                                {"$arrayElemAt": ["$$query", "$$this"]},
+                                                {"$arrayElemAt": ["$$embedding", "$$this"]}
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {"$sort": {"dot_product": -1}},  # Sort by highest similarity
+        {"$limit": 3}  # Limit to top 3
+    ]
+
+    # Execute the aggregation
+    results = list(collection.aggregate(pipeline))
+
+    retrieved_name_list = []
+    retrieved_hobby_list = []
+
+    # Display the results
+    for result in results:
+        #print(f"Fetched {result['name']}'s hobby : {result['hobby']}")
+        retrieved_name_list.append(result["name"])
+        retrieved_hobby_list.append(result["hobby"])
+
+    return retrieved_name_list, retrieved_hobby_list
