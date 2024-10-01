@@ -2,3 +2,4 @@ key.py
 memo.txt
 Meta-Llama-3.1-8B/*
 __pycache__/*
+VL_span_extraction.json
