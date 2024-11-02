@@ -6,7 +6,7 @@ from fetch_relevant import fetch_relevant_document
 from openai import OpenAI
 
 
-def ge(hobby, newspaper_title):
+def get_relevant_newspapers(hobby, newspaper_title):
     prompt = f"User's hobby is {hobby} and he is reading newspaper which name is {newspaper_title}"
     prompt_embedding = get_embedding(prompt)
 
