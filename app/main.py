@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 
 
 ##http://127.0.0.1:8000/fetch?hobby=sports&newspaper_title=World%20Cup%20Finals
+##uvicorn app.main:app --reload
+
 
  
 app = FastAPI()
