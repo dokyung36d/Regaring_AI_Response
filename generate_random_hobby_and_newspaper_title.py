@@ -1,8 +1,11 @@
-from key import openai_key
+# from key import openai_key
 import json
 import random
+import os
 
 from openai import OpenAI
+
+openai_key = os.getenv("openai_key")
 
 def generate_hobby_and_newspaper_tile():
     seed = random.randint(1, 10000)

@@ -5,6 +5,9 @@ from prompt import get_relevant_newspapers
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+
+##http://127.0.0.1:8000/fetch?hobby=sports&newspaper_title=World%20Cup%20Finals
+
  
 app = FastAPI()
 

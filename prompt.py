@@ -1,4 +1,3 @@
-from key import openai_key
 import json
 import random
 from embedding import get_embedding

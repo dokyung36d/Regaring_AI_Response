@@ -1,6 +1,8 @@
-from key import openai_key
-
+# from key import openai_key
 from openai import OpenAI
+import os
+
+openai_key = os.getenv("openai_key")
 
 client = OpenAI(
   organization='org-RSWEbMw552t3xBqgzkF6w547',
