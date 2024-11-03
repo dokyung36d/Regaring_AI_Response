@@ -4,5 +4,4 @@ Meta-Llama-3.1-8B/*
 __pycache__/*
 VL_span_extraction.json
 .env
-rag_key.pem
-rag_key.ppk
+newrag.ppk
