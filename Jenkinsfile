@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        OPENAI_KEY = "${openai_key}"
-        MONGODB_USERNAME = "${mongodb_username}"
-        MONGODB_PASSWORD = "${mongodb_password}"
+        OPENAI_KEY = credentials('openai_key')
+        MONGODB_USERNAME = credentials('mongodb_username')
+        MONGODB_PASSWORD = credentials('mongodb_password')
     }
     stages {
         stage('Clone Repository') {
