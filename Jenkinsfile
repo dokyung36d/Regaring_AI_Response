@@ -6,21 +6,20 @@ pipeline {
         MONGODB_PASSWORD = credentials('mongodb_password')
     }
     stages {
-        stage('Create .env File') {
-            steps {
-                script {
-                    writeFile file: '.env', text: """
-                    openai_key=${env.OPENAI_KEY}
-                    mongodb_username=${env.MONGODB_USERNAME}
-                    mongodb_password=${env.MONGODB_PASSWORD}
-                    """
-                }
-            }
-        }
         stage('Clone Repository') {
             steps {
                 // Git 리포지토리에서 최신 코드 가져오기
                 git 'https://github.com/dokyung36d/Regaring_AI_Response.git'
+            }
+        }
+        stage('Create .env File') {
+            steps {
+                script {
+                    writeFile file: '.env', text: """openai_key=${env.OPENAI_KEY}
+                    mongodb_username=${env.MONGODB_USERNAME}
+                    mongodb_password=${env.MONGODB_PASSWORD}
+                    """
+                }
             }
         }
         stage('Build Docker Image') {
