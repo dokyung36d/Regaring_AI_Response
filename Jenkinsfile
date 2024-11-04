@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        OPENAI_KEY = credentials('openai_key')
-        MONGODB_USERNAME = credentials('mongodb_username')
-        MONGODB_PASSWORD = credentials('mongodb_password')
+        OPENAI_KEY = "${openai_key}"
+        MONGODB_USERNAME = "${mongodb_username}"
+        MONGODB_PASSWORD = "${mongodb_password}"
     }
     stages {
         stage('Clone Repository') {
@@ -15,9 +15,10 @@ pipeline {
         stage('Create .env File') {
             steps {
                 script {
-                    writeFile file: '.env', text: """openai_key=${env.OPENAI_KEY}
-                    mongodb_username=${env.MONGODB_USERNAME}
-                    mongodb_password=${env.MONGODB_PASSWORD}
+                    sh """
+                    echo 'openai_key=${OPENAI_KEY}' > .env
+                    echo 'mongodb_password=${MONGODB_PASSWORD}' >> .env
+                    echo 'mongodb_username=${MONGODB_USERNAME}' >> .env
                     """
                 }
             }
