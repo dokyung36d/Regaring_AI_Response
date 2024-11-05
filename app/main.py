@@ -24,5 +24,5 @@ async def main(hobby, newspaper_title):
 
     result = get_relevant_newspapers(retreived_hobby, newspaper_title)
  
-    RAG_dict = {"retrieved hobby" : "jenkins working test", "relevent newspapers" : result}
+    RAG_dict = {"retrieved hobby" : retreived_hobby, "relevent newspapers" : result}
     return JSONResponse(content=RAG_dict)
