@@ -1,13 +1,16 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
+import certifi
 # from key import mongodb_password
+
+ca = certifi.where()
 
 mongodb_password = os.getenv("mongodb_password")
 
 uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile = ca)
 
 # if __name__ == "__main__":
 #     # Fetch one document
