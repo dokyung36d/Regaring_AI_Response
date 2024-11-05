@@ -6,12 +6,12 @@ pipeline {
         MONGODB_PASSWORD = credentials('mongodb_password')
     }
     stages {
-        stage('Clone Repository') {
-            steps {
-                // Git 리포지토리에서 최신 코드 가져오기
-                git 'https://github.com/dokyung36d/Regaring_AI_Response.git'
-            }
-        }
+        // stage('Clone Repository') {
+        //     steps {
+        //         // Git 리포지토리에서 최신 코드 가져오기
+        //         git 'https://github.com/dokyung36d/Regaring_AI_Response.git'
+        //     }
+        // }
         stage('Create .env File') {
             steps {
                 script {
