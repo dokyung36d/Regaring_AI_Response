@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // 새로운 Docker 컨테이너 실행
-                    sh 'docker run -d -p 8000:8000 --env-file .env --name rag_container'
+                    sh 'docker run -d -p 8000:8000 --env-file .env --name rag_container rag_image'
                 }
             }
         } 
