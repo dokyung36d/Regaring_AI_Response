@@ -1,7 +1,7 @@
 from generate_random_hobby_and_newspaper_title import generate_hobby_and_newspaper_tile
 from embedding import get_embedding
 from fetch_relevant import fetch_relevant_document
-from prompt import get_relevant_newspapers
+from prompt import get_relevant_newspapers, get_recommend_advertise
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -22,7 +22,8 @@ async def main(hobby, newspaper_title):
 
     retreived_hobby = fetch_relevant_document(generated_newspaper_title_embedding, database="RAG", collection="embedding", key="hobby", num_fetched=1)
 
-    result = get_relevant_newspapers(retreived_hobby, newspaper_title)
+    relevent_newspapers = get_relevant_newspapers(retreived_hobby, newspaper_title)
+    recommended_advertise = get_recommend_advertise(hobby, newspaper_title, relevent_newspapers)
  
-    RAG_dict = {"retrieved hobby" : retreived_hobby, "relevent newspapers" : result}
+    RAG_dict = {"relevent hobby" : retreived_hobby, "relevent newspapers" : relevent_newspapers, "recommended_advertise" : recommended_advertise}
     return JSONResponse(content=RAG_dict)
