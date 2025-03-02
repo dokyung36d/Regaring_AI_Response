@@ -1,56 +1,78 @@
-from langchain_mongodb import MongoDBAtlasVectorSearch
-from langchain_openai import OpenAIEmbeddings
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-import certifi
+from langchain_openai import OpenAIEmbeddings
+from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
+import certifi
 from key import openai_key
-# from key import mongodb_password
+
+ca = certifi.where()
+
+mongodb_password = os.getenv("mongodb_password")
+
+uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile = ca)
+
+embedding_model = OpenAIEmbeddings(api_key=openai_key)
+
+# VectorStore 초기화
+database="RAG"
+collection="embedding"
+key="hobby"
+num_fetched=1
+index_name="hobby_index"
+
+vector_store = MongoDBAtlasVectorSearch(
+    collection=client[database][collection],
+    embedding=embedding_model,
+    text_key="page_content",
+    index_name=index_name,
+    embedding_key="hobby_embedding",
+    relevance_score_fn="cosine"
+)
+
+def fetch_relevant_document(query_text, num_fetched=5):
+    """
+    텍스트 쿼리를 기반으로 유사한 문서 검색
+    - query_text: 검색할 텍스트
+    - num_fetched: 반환할 문서 수
+    """
+
+    # Langchain 내장 similarity_search 사용
+    similar_docs = vector_store.similarity_search(query_text, k=num_fetched)
+
+    # 결과에서 필요한 필드 추출 (예: 문서 전체 내용 혹은 특정 메타데이터 등)
+    # 필요한 key가 있다면 아래를 수정
+    retrieved_hobby_list = [doc.page_content for doc in similar_docs]
+
+    return retrieved_hobby_list
+
+print(fetch_relevant_document("outdoor activities"))
+
+
+# from pymongo import MongoClient
+# import os
+# import certifi
 
 # ca = certifi.where()
 # mongodb_password = os.getenv("mongodb_password")
 
 # uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-# # Create a new client and connect to the server
-# client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile = ca)
-# # MongoDB 클라이언트 설정
+# client = MongoClient(uri, tlsCAFile=ca)
 
-# # OpenAI Embedding 설정
-# embeddings = OpenAIEmbeddings(openai_api_key = openai_key)
+# db = client["newspaperTitle"]
+# collection = db['title']
 
-# database="RAG"
-# collection="embedding"
-# key="hobby"
-# num_fetched=1
+# # 모든 문서를 순회하면서 구조 변경
+# for doc in collection.find({}):
+#     updated_doc = {
+#         "page_content": doc["newspaper_title"],
+#         "metadata": {
+# },
+#         "hobby_embedding": doc['hobby_embedding']
+#     }
+#     # 기존 문서 교체 (upsert=False로 문서 덮어쓰기)
+#     collection.replace_one({"_id": doc["_id"]}, updated_doc)
 
-# # VectorStore 초기화
-# vector_store = MongoDBAtlasVectorSearch(
-#     collection=client[database][collection],
-#     embedding=embeddings
-# )
-
-# query = "How can I use vector search in MongoDB?"
-
-# # 유사 문서 검색
-# similar_docs = vector_store.similarity_search(query, k=3)
-
-# print("hello world")
-# # 결과 출력
-# for i, doc in enumerate(similar_docs, 1):
-#     print(f"Result {i}: {doc.page_content}")
-#     print("heello world")
-
-from generate_random_hobby_and_newspaper_title import generate_hobby_and_newspaper_tile
-from embedding import get_embedding
-from fetch_relevant import fetch_relevant_document
-from prompt import get_relevant_newspapers, get_recommend_advertise
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-import redis
-import json
-
-
-generated_newspaper_title_embedding = get_embedding("mlb word")
-
-retreived_hobby = fetch_relevant_document(generated_newspaper_title_embedding, database="RAG", collection="embedding", key="hobby", num_fetched=1, index_name="hobby_vector_index")
-print("hellow rodl")
+# print("데이터 구조 업데이트 완료")

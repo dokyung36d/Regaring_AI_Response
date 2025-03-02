@@ -1,10 +1,15 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from langchain_openai import OpenAIEmbeddings
+from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
 import certifi
+from key import openai_key
 # from key import mongodb_password
 
 ca = certifi.where()
+
+embedding_model = OpenAIEmbeddings(api_key=openai_key)
 
 mongodb_password = os.getenv("mongodb_password")
 
@@ -12,32 +17,19 @@ uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile = ca)
 
-def fetch_relevant_document(embedding, database, collection, key, num_fetched, index_name):
-    db = client[database]
-    collection = db[collection]
+def fetch_relevant_document(query_text, database, collection, num_fetched, index_name):
+    vector_store = MongoDBAtlasVectorSearch(
+    collection=client[database][collection],
+    embedding=embedding_model,
+    text_key="page_content",
+    index_name=index_name,
+    embedding_key="hobby_embedding",
+    relevance_score_fn="cosine")
 
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": index_name,  # Atlas에서 설정한 인덱스 이름으로 변경 필요
-                "path": "hobby_embedding",      # 벡터 필드 이름
-                "queryVector": embedding,       # 검색 쿼리 벡터
-                "numCandidates": 100,            # 후보군 개수 (적절히 조절 가능)
-                "limit": num_fetched,            # 최종 반환 개수
-                "similarity": "cosine"           # 유사도 방식 (cosine, euclidean 등)
-            }
-        },
-        {
-            "$project": {
-                key: 1,               # 필요한 필드만 선택
-            }
-        }
-    ]
+    similar_docs = vector_store.similarity_search(query_text, k=num_fetched)
 
-    # 검색 실행
-    results = list(collection.aggregate(pipeline))
-
-    # 결과 리스트 구성
-    retrieved_hobby_list = [result[key] for result in results]
+    # 결과에서 필요한 필드 추출 (예: 문서 전체 내용 혹은 특정 메타데이터 등)
+    # 필요한 key가 있다면 아래를 수정
+    retrieved_hobby_list = [doc.page_content for doc in similar_docs]
 
     return retrieved_hobby_list

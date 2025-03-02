@@ -26,9 +26,8 @@ async def main(hobby, newspaper_title):
 
     if r.get(key) is not None:
        return JSONResponse(content=json.loads(r.get(key))) 
-    generated_newspaper_title_embedding = get_embedding(newspaper_title)
 
-    retreived_hobby = fetch_relevant_document(generated_newspaper_title_embedding, database="RAG", collection="embedding", key="hobby", num_fetched=1, index_name="hobby_vector_index")
+    retreived_hobby = fetch_relevant_document(newspaper_title, database="RAG", collection="embedding", num_fetched=1, index_name="hobby_index")
 
     relevent_newspapers = get_relevant_newspapers(retreived_hobby, newspaper_title)
     recommended_advertise = get_recommend_advertise(hobby, newspaper_title, relevent_newspapers)

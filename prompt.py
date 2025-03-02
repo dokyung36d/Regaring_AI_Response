@@ -12,7 +12,7 @@ def get_relevant_newspapers(hobby, newspaper_title):
     prompt = f"User's hobby is {hobby} and he is reading newspaper which name is {newspaper_title}"
     prompt_embedding = get_embedding(prompt)
 
-    fetched_newspapers = fetch_relevant_document(prompt_embedding, database="newspaperTitle", collection="title", key = "newspaper_title", num_fetched=5, index_name="title_vector_index")
+    fetched_newspapers = fetch_relevant_document(prompt, database="newspaperTitle", collection="title", num_fetched=5, index_name="title_vector_index")
 
     return fetched_newspapers
 
