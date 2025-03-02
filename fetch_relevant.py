@@ -12,101 +12,32 @@ uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile = ca)
 
-# if __name__ == "__main__":
-#     # Fetch one document
-#     document = collection.find_one()
-#     hobby_embedding = document["hobby_embedding"]
-
-#     pipeline = [
-#         {
-#             "$addFields": {
-#                 "dot_product": {
-#                     "$let": {
-#                         "vars": {
-#                             "query": hobby_embedding,
-#                             "embedding": "$hobby_embedding"
-#                         },
-#                         "in": {
-#                             "$reduce": {
-#                                 "input": {"$range": [0, {"$size": "$$query"}]},
-#                                 "initialValue": 0,
-#                                 "in": {
-#                                     "$add": [
-#                                         "$$value",
-#                                         {
-#                                             "$multiply": [
-#                                                 {"$arrayElemAt": ["$$query", "$$this"]},
-#                                                 {"$arrayElemAt": ["$$embedding", "$$this"]}
-#                                             ]
-#                                         }
-#                                     ]
-#                                 }
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#         },
-#         {"$sort": {"dot_product": -1}},  # Sort by highest similarity
-#         {"$limit": 3}  # Limit to top 3
-#     ]
-
-#     # Execute the aggregation
-#     results = list(collection.aggregate(pipeline))
-
-#     print(f"{document['name']}'s hobby : {document['hobby']}")
-
-#     # Display the results
-#     for result in results:
-#         print(f"Fetched {result['name']}'s hobby : {result['hobby']}")
-
-def fetch_relevant_document(embedding, database, collection, key, num_fetched):
+def fetch_relevant_document(embedding, database, collection, key, num_fetched, index_name):
     db = client[database]
     collection = db[collection]
+
     pipeline = [
         {
-            "$addFields": {
-                "dot_product": {
-                    "$let": {
-                        "vars": {
-                            "query": embedding,
-                            "embedding": "$hobby_embedding"
-                        },
-                        "in": {
-                            "$reduce": {
-                                "input": {"$range": [0, {"$size": "$$query"}]},
-                                "initialValue": 0,
-                                "in": {
-                                    "$add": [
-                                        "$$value",
-                                        {
-                                            "$multiply": [
-                                                {"$arrayElemAt": ["$$query", "$$this"]},
-                                                {"$arrayElemAt": ["$$embedding", "$$this"]}
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
+            "$vectorSearch": {
+                "index": index_name,  # Atlas에서 설정한 인덱스 이름으로 변경 필요
+                "path": "hobby_embedding",      # 벡터 필드 이름
+                "queryVector": embedding,       # 검색 쿼리 벡터
+                "numCandidates": 100,            # 후보군 개수 (적절히 조절 가능)
+                "limit": num_fetched,            # 최종 반환 개수
+                "similarity": "cosine"           # 유사도 방식 (cosine, euclidean 등)
             }
         },
-        {"$sort": {"dot_product": -1}},  # Sort by highest similarity
-        {"$limit": num_fetched}  # Limit to top 3
+        {
+            "$project": {
+                key: 1,               # 필요한 필드만 선택
+            }
+        }
     ]
 
-    # Execute the aggregation
+    # 검색 실행
     results = list(collection.aggregate(pipeline))
 
-    # retrieved_name_list = []
-    retrieved_hobby_list = []
-
-    # Display the results
-    for result in results:
-        #print(f"Fetched {result['name']}'s hobby : {result['hobby']}")
-        #retrieved_name_list.append(result["name"])
-        retrieved_hobby_list.append(result[key])
+    # 결과 리스트 구성
+    retrieved_hobby_list = [result[key] for result in results]
 
     return retrieved_hobby_list
