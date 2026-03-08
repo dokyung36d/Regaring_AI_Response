@@ -37,13 +37,13 @@ with open(file_path, mode='r', encoding='utf-8') as file:
         hobby, name = row[0], row[1]  # First column (취미)
         print(hobby, name)
 
-        responese = openai_client.embeddings.create(
+        response = openai_client.embeddings.create(
             model="text-embedding-ada-002",
             input=hobby,
             encoding_format="float"
             )
 
-        embedding_vector = responese.data[0].embedding
+        embedding_vector = response.data[0].embedding
 
         dict = {
             "name" : name,

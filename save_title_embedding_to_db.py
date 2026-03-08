@@ -34,13 +34,13 @@ with open('VL_span_extraction.json', 'r', encoding='utf-8') as file:
 for i in range(len(data["data"])):
     newspaper_title = data["data"][i]["doc_title"]
 
-    responese = openai_client.embeddings.create(
+    response = openai_client.embeddings.create(
             model="text-embedding-ada-002",
             input=newspaper_title,
             encoding_format="float"
             )
 
-    embedding_vector = responese.data[0].embedding
+    embedding_vector = response.data[0].embedding
 
     dict = {
         "newspaper_title" : newspaper_title,

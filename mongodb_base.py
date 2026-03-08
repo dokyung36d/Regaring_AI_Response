@@ -17,16 +17,6 @@ def insert_one(coll):
     }
     coll.insert_one(mydict)
 
-if __name__ == '__main__':
-    coll = ConnectMongoDB()
-    insert_one(coll)
-
-def ConnectMongoDB():
-    client = MongoClient("mongodb://localhost:27017")
-    mydb = client["signup"]
-    mycol = mydb["userinfo"]
-    return mycol
-
 def select_one(coll):
     result = coll.find_one()
     print(result)
@@ -38,6 +28,7 @@ def select_all(coll):
 
 if __name__ == '__main__':
     coll = ConnectMongoDB()
+    insert_one(coll)
     print("findOne 쿼리")
     select_one(coll)
     print("findAll 쿼리")

@@ -13,10 +13,10 @@ client = OpenAI(
 
 
 def get_embedding(text):
-    responese = client.embeddings.create(
+    response = client.embeddings.create(
     model="text-embedding-ada-002",
     input=text,
     encoding_format="float"
     )
 
-    return responese.data[0].embedding
+    return response.data[0].embedding
