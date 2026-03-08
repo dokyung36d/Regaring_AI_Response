@@ -16,7 +16,11 @@ import re
 ## docker run --env-file .env -p 8000:8000 rag
 
 
-r = redis.Redis(host='localhost', port=6379, db=0) # 로컬에 띄운 Redis 서버에 연결 
+try:
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    r.ping()
+except redis.exceptions.ConnectionError:
+    r = None
 
  
 app = FastAPI()
@@ -42,16 +46,19 @@ async def main(hobby, newspaper_title):
     newspaper_title = _validate_input(newspaper_title, "newspaper_title")
     key = json.dumps({"hobby" : hobby, "newspaper_title" : newspaper_title})
 
-    if r.get(key) is not None:
-       return JSONResponse(content=json.loads(r.get(key))) 
+    if r is not None:
+        cached = r.get(key)
+        if cached is not None:
+            return JSONResponse(content=json.loads(cached))
 
     retreived_hobby = fetch_relevant_document(newspaper_title, database="RAG", collection="embedding", num_fetched=1, index_name="hobby_index", text_key="hobby")
 
     relevent_newspapers = get_relevant_newspapers(retreived_hobby, newspaper_title)
     recommended_advertise = get_recommend_advertise(hobby, newspaper_title, relevent_newspapers)
- 
+
     RAG_dict = {"relevent hobby" : retreived_hobby, "relevent newspapers" : relevent_newspapers, "recommended_advertise" : recommended_advertise}
     RAG_dict_JSON = json.dumps(RAG_dict)
-    r.set(key, RAG_dict_JSON)
+    if r is not None:
+        r.set(key, RAG_dict_JSON, ex=3600)  # TTL 1시간
 
     return JSONResponse(content=RAG_dict)
