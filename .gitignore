@@ -5,3 +5,4 @@ __pycache__/*
 VL_span_extraction.json
 .env
 newrag.ppk
+dump.rdb

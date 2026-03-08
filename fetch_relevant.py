@@ -137,13 +137,14 @@ def compare_ann_vs_full_scan(query_text, database, collection, num_fetched, inde
 
 
 if __name__ == "__main__":
-    from key import openai_key as _ok, mongodb_password as _mp, mongodb_username as _mu, openai_org_id as _oid
-    os.environ["openai_key"] = _ok
-    os.environ["mongodb_password"] = _mp
-    os.environ["mongodb_username"] = _mu
-    os.environ["openai_org_id"] = _oid
+    from dotenv import load_dotenv
+    load_dotenv()
 
-    # 환경변수 세팅 후 재초기화
+    _ok = os.getenv("openai_key")
+    _mp = os.getenv("mongodb_password")
+    _mu = os.getenv("mongodb_username")
+
+    # 환경변수 로드 후 재초기화
     embedding_model = OpenAIEmbeddings(api_key=_ok)
     uri = f"mongodb+srv://{_mu}:{_mp}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
