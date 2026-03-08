@@ -143,6 +143,38 @@ GET http://127.0.0.1:8000/fetch?hobby=sports&newspaper_title=World%20Cup%20Final
 }
 ```
 
+## 벡터 검색 방식 비교 (ANN vs Exact Search)
+
+`fetch_relevant.py`를 직접 실행하면 두 검색 방식의 결과와 소요 시간을 비교할 수 있습니다.
+
+```bash
+/opt/miniconda3/envs/rag_server/bin/python fetch_relevant.py
+```
+
+### 검색 방식
+
+| 방식 | 설명 |
+|------|------|
+| **ANN** (Approximate Nearest Neighbor) | HNSW 인덱스를 활용한 근사 검색. 결과가 완전히 정확하지 않을 수 있으나 대규모 데이터에서 빠름 |
+| **Exact Search** | `$vectorSearch`의 `exact: true` 옵션으로 전체 벡터를 직접 비교. 결과가 정확하나 데이터가 많을수록 느려짐 |
+
+### 실측 결과 (현재 데이터셋 기준)
+
+```
+============================================================
+  검색 방식 비교  |  query: 'User's hobby is travel ...'
+============================================================
+
+[ANN Search]  소요 시간: 1.2784s
+[Full Scan]   소요 시간: 0.1161s
+
+  → Full Scan이 11.0배 더 빠름
+============================================================
+```
+
+> **결과 해석:** 현재 데이터셋은 규모가 작아 ANN 인덱스 탐색 오버헤드가 Exact Search보다 크게 나타남.
+> 데이터가 수십만 건 이상으로 늘어나면 ANN이 압도적으로 빨라짐.
+
 ## 데이터 출처
 
 신문 기사 제목: [AIHub - 신문기사 기계독해 데이터](https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&dataSetSn=577)
