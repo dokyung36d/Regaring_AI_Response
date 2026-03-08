@@ -20,11 +20,11 @@ except Exception:
     embedding_model = None
     client = None
 
-def fetch_relevant_document(query_text, database, collection, num_fetched, index_name):
+def fetch_relevant_document(query_text, database, collection, num_fetched, index_name, text_key="page_content"):
     vector_store = MongoDBAtlasVectorSearch(
     collection=client[database][collection],
     embedding=embedding_model,
-    text_key="page_content",
+    text_key=text_key,
     index_name=index_name,
     embedding_key="hobby_embedding",
     relevance_score_fn="cosine")

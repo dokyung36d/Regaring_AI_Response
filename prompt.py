@@ -11,7 +11,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 def get_relevant_newspapers(hobby, newspaper_title):
     prompt = f"User's hobby is {hobby} and he is reading newspaper which name is {newspaper_title}"
 
-    fetched_newspapers = fetch_relevant_document(prompt, database="newspaperTitle", collection="title", num_fetched=5, index_name="title_vector_index")
+    fetched_newspapers = fetch_relevant_document(prompt, database="newspaperTitle", collection="title", num_fetched=5, index_name="title_vector_index", text_key="newspaper_title")
 
     return fetched_newspapers
 
