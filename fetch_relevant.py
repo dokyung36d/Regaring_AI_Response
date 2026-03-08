@@ -10,10 +10,11 @@ ca = certifi.where()
 
 openai_key = os.getenv("openai_key")
 mongodb_password = os.getenv("mongodb_password")
+mongodb_username = os.getenv("mongodb_username")
 
 try:
     embedding_model = OpenAIEmbeddings(api_key=openai_key)
-    uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    uri = f"mongodb+srv://{mongodb_username}:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
 except Exception:
     embedding_model = None
@@ -136,13 +137,15 @@ def compare_ann_vs_full_scan(query_text, database, collection, num_fetched, inde
 
 
 if __name__ == "__main__":
-    from key import openai_key as _ok, mongodb_password as _mp
+    from key import openai_key as _ok, mongodb_password as _mp, mongodb_username as _mu, openai_org_id as _oid
     os.environ["openai_key"] = _ok
     os.environ["mongodb_password"] = _mp
+    os.environ["mongodb_username"] = _mu
+    os.environ["openai_org_id"] = _oid
 
     # 환경변수 세팅 후 재초기화
     embedding_model = OpenAIEmbeddings(api_key=_ok)
-    uri = f"mongodb+srv://dokyung36d:{_mp}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    uri = f"mongodb+srv://{_mu}:{_mp}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
 
     compare_ann_vs_full_scan(

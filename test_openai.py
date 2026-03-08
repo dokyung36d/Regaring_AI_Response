@@ -1,10 +1,11 @@
 import os
 openai_key = os.getenv("openai_key")
+openai_org_id = os.getenv("openai_org_id")
 
 from openai import OpenAI
 
 client = OpenAI(
-  organization='org-RSWEbMw552t3xBqgzkF6w547',
+  organization=openai_org_id,
   api_key=openai_key
 )
 

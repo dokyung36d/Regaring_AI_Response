@@ -6,8 +6,9 @@ from pymongo.server_api import ServerApi
 
 openai_key = os.getenv("openai_key")
 mongodb_password = os.getenv("mongodb_password")
+mongodb_username = os.getenv("mongodb_username")
 
-uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+uri = f"mongodb+srv://{mongodb_username}:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # Create a new client and connect to the server
 mongodb_client = MongoClient(uri, server_api=ServerApi('1'))
 
@@ -15,8 +16,10 @@ database = mongodb_client["RAG"]
 collection = database["embedding"]
 
 
+openai_org_id = os.getenv("openai_org_id")
+
 openai_client = OpenAI(
-  organization='org-RSWEbMw552t3xBqgzkF6w547',
+  organization=openai_org_id,
   api_key=openai_key
 )
 

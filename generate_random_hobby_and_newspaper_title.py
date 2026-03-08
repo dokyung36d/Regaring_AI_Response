@@ -10,8 +10,9 @@ openai_key = os.getenv("openai_key")
 def generate_hobby_and_newspaper_tile():
     seed = random.randint(1, 10000)
 
+    openai_org_id = os.getenv("openai_org_id")
     client = OpenAI(
-    organization='org-RSWEbMw552t3xBqgzkF6w547',
+    organization=openai_org_id,
     api_key=openai_key
     )
 
