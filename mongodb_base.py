@@ -1,5 +1,6 @@
 from pymongo import MongoClient
-from key import mongodb_password
+import os
+mongodb_password = os.getenv("mongodb_password")
 
 def ConnectMongoDB():
     client = MongoClient("mongodb://localhost:27017")

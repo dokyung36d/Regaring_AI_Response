@@ -4,7 +4,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
 import certifi
-from key import openai_key
+openai_key = os.getenv("openai_key")
 
 ca = certifi.where()
 

@@ -4,14 +4,13 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
 import certifi
-from key import openai_key
-# from key import mongodb_password
 
 ca = certifi.where()
 
-embedding_model = OpenAIEmbeddings(api_key=openai_key)
-
+openai_key = os.getenv("openai_key")
 mongodb_password = os.getenv("mongodb_password")
+
+embedding_model = OpenAIEmbeddings(api_key=openai_key)
 
 uri = f"mongodb+srv://dokyung36d:{mongodb_password}@cluster0.w5p7p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # Create a new client and connect to the server

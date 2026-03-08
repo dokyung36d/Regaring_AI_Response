@@ -3,9 +3,10 @@ import random
 from embedding import get_embedding
 from fetch_relevant import fetch_relevant_document
 from openai import OpenAI
-from key import openai_key
+import os
+openai_key = os.getenv("openai_key")
 from langchain_openai import ChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 
 def get_relevant_newspapers(hobby, newspaper_title):
