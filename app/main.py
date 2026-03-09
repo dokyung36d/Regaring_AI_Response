@@ -1,3 +1,13 @@
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
+_REQUIRED_ENV = ["openai_key", "mongodb_username", "mongodb_password"]
+_missing = [k for k in _REQUIRED_ENV if not os.getenv(k)]
+if _missing:
+    raise RuntimeError(f"Missing required environment variables: {', '.join(_missing)}")
+
 from generate_random_hobby_and_newspaper_title import generate_hobby_and_newspaper_tile
 from embedding import get_embedding
 from fetch_relevant import fetch_relevant_document
