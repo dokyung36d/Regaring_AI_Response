@@ -20,17 +20,26 @@ except Exception:
     embedding_model = None
     client = None
 
+_vector_store_cache: dict = {}
+
+def _get_vector_store(database, collection, index_name, text_key):
+    key = (database, collection, index_name, text_key)
+    if key not in _vector_store_cache:
+        _vector_store_cache[key] = MongoDBAtlasVectorSearch(
+            collection=client[database][collection],
+            embedding=embedding_model,
+            text_key=text_key,
+            index_name=index_name,
+            embedding_key="hobby_embedding",
+            relevance_score_fn="cosine",
+        )
+    return _vector_store_cache[key]
+
 def fetch_relevant_document(query_text, database, collection, num_fetched, index_name, text_key="page_content"):
     if client is None or embedding_model is None:
         raise RuntimeError("MongoDB 또는 OpenAI Embeddings 초기화에 실패했습니다. 환경변수와 네트워크 연결을 확인하세요.")
 
-    vector_store = MongoDBAtlasVectorSearch(
-    collection=client[database][collection],
-    embedding=embedding_model,
-    text_key=text_key,
-    index_name=index_name,
-    embedding_key="hobby_embedding",
-    relevance_score_fn="cosine")
+    vector_store = _get_vector_store(database, collection, index_name, text_key)
 
     similar_docs = vector_store.similarity_search(query_text, k=num_fetched)
 
