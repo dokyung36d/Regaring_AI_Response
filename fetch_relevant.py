@@ -21,6 +21,9 @@ except Exception:
     client = None
 
 def fetch_relevant_document(query_text, database, collection, num_fetched, index_name, text_key="page_content"):
+    if client is None or embedding_model is None:
+        raise RuntimeError("MongoDB 또는 OpenAI Embeddings 초기화에 실패했습니다. 환경변수와 네트워크 연결을 확인하세요.")
+
     vector_store = MongoDBAtlasVectorSearch(
     collection=client[database][collection],
     embedding=embedding_model,
