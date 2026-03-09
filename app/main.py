@@ -12,7 +12,7 @@ from generate_random_hobby_and_newspaper_title import generate_hobby_and_newspap
 from embedding import get_embedding
 from fetch_relevant import fetch_relevant_document
 from prompt import get_relevant_newspapers, get_recommend_advertise
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 import redis
 import json
@@ -51,7 +51,10 @@ def _validate_input(value: str, field: str) -> str:
     return value
 
 @app.get("/fetch")
-async def main(hobby, newspaper_title):
+async def main(
+    hobby: str = Query(..., description="사용자의 취미"),
+    newspaper_title: str = Query(..., description="신문 기사 제목"),
+):
     hobby = _validate_input(hobby, "hobby")
     newspaper_title = _validate_input(newspaper_title, "newspaper_title")
     key = json.dumps({"hobby" : hobby, "newspaper_title" : newspaper_title})
