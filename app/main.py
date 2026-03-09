@@ -61,10 +61,12 @@ async def main(hobby, newspaper_title):
         if cached is not None:
             return JSONResponse(content=json.loads(cached))
 
-    retreived_hobby = fetch_relevant_document(newspaper_title, database="RAG", collection="embedding", num_fetched=1, index_name="hobby_index", text_key="hobby")
-
-    relevent_newspapers = get_relevant_newspapers(retreived_hobby, newspaper_title)
-    recommended_advertise = get_recommend_advertise(hobby, newspaper_title, relevent_newspapers)
+    try:
+        retreived_hobby = fetch_relevant_document(newspaper_title, database="RAG", collection="embedding", num_fetched=1, index_name="hobby_index", text_key="hobby")
+        relevent_newspapers = get_relevant_newspapers(retreived_hobby, newspaper_title)
+        recommended_advertise = get_recommend_advertise(hobby, newspaper_title, relevent_newspapers)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="추천 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
 
     RAG_dict = {"relevent hobby" : retreived_hobby, "relevent newspapers" : relevent_newspapers, "recommended_advertise" : recommended_advertise}
     RAG_dict_JSON = json.dumps(RAG_dict)
